@@ -33,6 +33,27 @@
   :group 'convenience
   :link '(url-link :tag "Github" "https://github.com/conao3/peek.el"))
 
+
+;;; Functions
+
+
+;;; Main
+
+(defun peek-mode--setup ()
+  "Setup peek-mode.")
+
+(defun peek-mode--teardown ()
+  "Setup peek-mode.")
+
+;;;###autoload
+(define-minor-mode peek-mode
+  "Enable peek-mode."
+  :lighter " peek"
+  :group 'peek
+  (if peek-mode
+      (peek-mode--setup)
+    (peek-mode--teardown)))
+
 (provide 'peek)
 
 ;; Local Variables:
