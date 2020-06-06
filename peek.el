@@ -36,18 +36,60 @@
 
 ;;; Functions
 
+(defvar compilation-current-error)
+(defvar compilation-context-lines)
+(defvar-local peek-window nil "The window used by peek.")
+(defvar-local peek-last-error-line nil "Last visit error line.")
+
 
 ;;; Main
 
+(declare-function 'compile-goto-error "compile")
+
+(defun peek-error ()
+  "Peek current line."
+  (pop-to-buffer (peek--error-noselect)))
+
+(defun peek-error-noselect ()
+  "Peek current line with noselect."
+  (interactive)
+  (let ((buf (cond
+              ((derived-mode-p major-mode '(compilation-mode))
+               (save-window-excursion
+                 (compile-goto-error)
+                 (current-buffer)))
+              (t
+               (error "Major-mode: %s is not supported" major-mode)))))
+    (cond
+     ((and peek-window
+           (window-live-p peek-window)
+           (not (equal (selected-window) peek-window)))
+      (set-window-buffer peek-window buf))
+     (t
+      (setq-local peek-window (display-buffer buf))))))
+
+(defun peek-mode--hook-function ()
+  "Hook function for `post-command-hook' in `peek-mode'.
+see `next-error-follow-mode-post-command-hook'."
+  (unless (equal peek-last-error-line (line-number-at-pos))
+    (setq peek-last-error-line (line-number-at-pos))
+    (ignore-errors
+      (peek-error-noselect))))
+
 (defun peek-mode--setup ()
-  "Setup peek-mode.")
+  "Setup peek-mode."
+  (setq-local peek-window (let ((w (next-window)))
+                            (unless (equal w (selected-window)) w)))
+  (add-hook 'post-command-hook 'peek-mode--hook-function))
 
 (defun peek-mode--teardown ()
-  "Setup peek-mode.")
+  "Setup peek-mode."
+  (remove-hook 'post-command-hook 'peek-mode--hook-function t))
 
 ;;;###autoload
 (define-minor-mode peek-mode
-  "Enable peek-mode."
+  "Enable peek-mode.
+Minor change from `next-error-follow-minor-mode'."
   :lighter " peek"
   :group 'peek
   (if peek-mode
