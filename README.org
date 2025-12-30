@@ -1,94 +1,99 @@
-#+author: conao3
-#+date: <2020-03-20 Fri>
+#+title: peek.el
+#+author: Naoya Yamashita
 
-[[https://github.com/conao3/peek.el][https://raw.githubusercontent.com/conao3/files/master/blob/headers/png/peek.el.png]]
 [[https://github.com/conao3/peek.el/blob/master/LICENSE][https://img.shields.io/github/license/conao3/peek.el.svg?style=flat-square]]
 [[https://github.com/conao3/peek.el/releases][https://img.shields.io/github/tag/conao3/peek.el.svg?style=flat-square]]
 [[https://github.com/conao3/peek.el/actions][https://github.com/conao3/peek.el/workflows/Main%20workflow/badge.svg]]
-[[https://app.codacy.com/project/conao3/peek.el/dashboard][https://img.shields.io/codacy/grade/62a36f4f04524d5e8c758440e8071c45.svg?logo=codacy&style=flat-square]]
-[[https://www.patreon.com/conao3][https://img.shields.io/badge/patreon-become%20a%20patron-orange.svg?logo=patreon&style=flat-square]]
-[[https://twitter.com/conao_3][https://img.shields.io/badge/twitter-@conao__3-blue.svg?logo=twitter&style=flat-square]]
-[[https://conao3-support.slack.com/join/shared_invite/enQtNjUzMDMxODcyMjE1LWUwMjhiNTU3Yjk3ODIwNzAxMTgwOTkxNmJiN2M4OTZkMWY0NjI4ZTg4MTVlNzcwNDY2ZjVjYmRiZmJjZDU4MDE][https://img.shields.io/badge/chat-on_slack-blue.svg?logo=slack&style=flat-square]]
 
-* Table of Contents
-- [[#description][Description]]
-- [[#install][Install]]
-- [[#usage][Usage]]
-- [[#customize][Customize]]
-- [[#information][Information]]
-  - [[#community][Community]]
-  - [[#contribution][Contribution]]
-  - [[#migration][Migration]]
-  - [[#license][License]]
-  - [[#author][Author]]
-  - [[#contributors][Contributors]]
+A lightweight Emacs minor mode that displays a live preview window for grep and compilation results.
 
-* Description
-Show peek window for grep.
+* Overview
 
-* Install
+When navigating through grep or compilation output, peek.el automatically displays a preview of the file at the current error location in an adjacent window. This provides a seamless way to browse search results without losing your place in the compilation buffer.
+
+* Features
+
+- Automatic preview updates as you move through grep/compilation results
+- Non-intrusive design that works alongside your existing workflow
+- Minimal configuration required
+
+* Requirements
+
+- Emacs 26.1 or later
+
+* Installation
+
+** Using leaf.el
+
 #+begin_src emacs-lisp
-  (leaf peek :ensure t)
+(leaf peek
+  :ensure t)
+#+end_src
+
+** Using use-package
+
+#+begin_src emacs-lisp
+(use-package peek
+  :ensure t)
+#+end_src
+
+** Manual Installation
+
+Clone this repository and add it to your load path:
+
+#+begin_src emacs-lisp
+(add-to-list 'load-path "/path/to/peek.el")
+(require 'peek)
 #+end_src
 
 * Usage
 
-* Customize
+After running a grep or compile command, enable peek-mode in the compilation buffer:
 
-* Information
-** Community
-All feedback and suggestions are welcome!
-
-You can use github issues, but you can also use [[https://conao3-support.slack.com/join/shared_invite/enQtNjUzMDMxODcyMjE1LWUwMjhiNTU3Yjk3ODIwNzAxMTgwOTkxNmJiN2M4OTZkMWY0NjI4ZTg4MTVlNzcwNDY2ZjVjYmRiZmJjZDU4MDE][Slack]]
-if you want a more casual conversation.
-
-** Contribution
-We welcome PR!
-
-*** Require tools for testing
-- cask
-  - install via brew
-    #+begin_src shell
-      brew install cask
-    #+end_src
-
-  - manual install
-    #+begin_src shell
-      cd ~/
-      hub clone cask/cask
-      export PATH="$HOME/.cask/bin:$PATH"
-    #+end_src
-
-*** Running test
-Below operation flow is recommended.
-#+begin_src shell
-  make                              # Install git-hooks in local .git
-
-  git branch [feature-branch]       # Create branch named [feature-branch]
-  git checkout [feature-branch]     # Checkout branch named [feature-branch]
-
-  # <edit loop>
-  emacs peek.el                     # Edit something you want
-
-  make test                         # Test peek via multi version Emacs
-  git commit -am "brabra"           # Commit (auto-run test before commit)
-  # </edit loop>
-
-  hub fork                          # Create fork at GitHub
-  git push [user] [feature-branch]  # Push feature-branch to your fork
-  hub pull-request                  # Create pull-request
+#+begin_src emacs-lisp
+M-x peek-mode
 #+end_src
 
-** Migration
+As you navigate through the results using =n= and =p= (or any movement commands), the corresponding file location will be displayed in the peek window.
 
-** License
-#+begin_example
-  General Public License Version 3 (GPLv3)
-  Copyright (c) Naoya Yamashita - https://conao3.com
-  https://github.com/conao3/peek.el/blob/master/LICENSE
-#+end_example
+To disable the preview, run =M-x peek-mode= again to toggle it off.
 
-** Author
-- Naoya Yamashita ([[https://github.com/conao3][conao3]])
+** Key Bindings
 
-** Contributors
+You may want to add a convenient binding in compilation-mode:
+
+#+begin_src emacs-lisp
+(define-key compilation-mode-map (kbd "P") #'peek-mode)
+#+end_src
+
+* Customization
+
+peek.el is designed to work out of the box with sensible defaults. The mode integrates with standard compilation-mode functionality.
+
+* Contributing
+
+Contributions are welcome. Please feel free to submit issues and pull requests on GitHub.
+
+** Development Setup
+
+1. Install [[https://github.com/cask/cask][Cask]] for dependency management
+2. Clone the repository
+3. Run =make= to set up git hooks
+4. Run =make test= to verify your changes
+
+** Submitting Changes
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes and ensure tests pass
+4. Submit a pull request
+
+* License
+
+GPL-3.0. See [[https://github.com/conao3/peek.el/blob/master/LICENSE][LICENSE]] for details.
+
+Copyright (c) Naoya Yamashita
+
+* Author
+
+Naoya Yamashita ([[https://github.com/conao3][conao3]])
